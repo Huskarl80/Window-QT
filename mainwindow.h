@@ -2,8 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QLabel>  // нужно это инклудить - QLabel*
-#include <QDebug>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,18 +13,18 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);//  Здесь объявляем nullptr чтобы отказаться от родителя.
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+private slots:
+    void onToggleButtonClicked();
 
 private:
     Ui::MainWindow *ui;
-    void addlabel();
-    QLabel *labelX = nullptr;     //  Активируем nullptr
-    bool isXVisible = true;       //  переменная булка
+    QPushButton *toggleButton;   // наша жёлтая кнопка
+    bool textVisible = true;     // флаг: X виден/нет
 
-private slots:
-    void onYellowRectClicked();
+    void setupUI();
 };
 
 #endif // MAINWINDOW_H
-
