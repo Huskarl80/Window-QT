@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -12,19 +13,19 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
+public:   // Здесь у нас заготовка для конструктора/деконструктора. Объявляем
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void onToggleButtonClicked();
+    void onToggleButtonClicked();  // один слот для всех кнопок
 
 private:
     Ui::MainWindow *ui;
-    QPushButton *toggleButton;   // наша жёлтая кнопка
-    bool textVisible = true;     // флаг: X виден/нет
+    QVector<QPushButton*> buttons; // 9 кнопок в сетке
 
     void setupUI();
 };
 
 #endif // MAINWINDOW_H
+
