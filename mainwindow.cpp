@@ -1,33 +1,33 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h" // вначале тащим нужное из mainwindow.h
+#include "ui_mainwindow.h"
 
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QFont>
-#include <QDebug>  // Инклудим все что нам нужно для верстки - строки 4-9
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent) // инициализируем базовый класс QMainWindow с родителем
+    : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this); // базовое окно - рамка
-    setWindowTitle("Tic-tac-toe game");
-    setupUI(); //вызываем нашу функцию, которая собирает «игровое поле» и диалоги
+    ui->setupUi(this);
+    setWindowTitle("Privet");
+    setupUI();
 }
 
-MainWindow::~MainWindow() // здесь деконструктор
+MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-void MainWindow::setupUI() // Это основное окно.
+void MainWindow::setupUI() // Здесь мы строим наше игровое поле.
 {
     QWidget *central = new QWidget(this);
-    central->setStyleSheet("background-color: rgb(127, 255, 0);");
+    central->setStyleSheet("background-color: rgb(127, 255, 0);"); // Задник салатовый.
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(central);
+    QVBoxLayout *mainLayout = new QVBoxLayout(central); // Главный вертикальный лейаут.
 
     // Контейнер для сетки 3x3
     QWidget *gridContainer = new QWidget(central);
@@ -42,10 +42,10 @@ void MainWindow::setupUI() // Это основное окно.
     const int rows = 3;
     const int cols = 3;
 
-    // Создаём 3x3 пустых ячеек через два вложенных цикла
+    // Создаём 3x3 пустых ячеек
     for (int r = 0; r < rows; ++r) {
         for (int c = 0; c < cols; ++c) {
-            auto *cell = new QPushButton("", gridContainer);
+            auto *cell = new QPushButton("", gridContainer); // стартуем БЕЗ текста
             cell->setFixedSize(100, 50);
             cell->setFont(btnFont);
             cell->setStyleSheet(
@@ -60,15 +60,15 @@ void MainWindow::setupUI() // Это основное окно.
                 "}"
                 );
 
-            // Индекс в нужном формате 11,12,13; 21,22,23; 31,32,33
-            int index = (r + 1) * 10 + (c + 1); // r умножаем на 10 и прибавляем текущуюю c - колонну.
-            cell->setProperty("index", index); // теперь это свойство самой кнопки.
+            // Индекс 11,12,13; 21,22,23; 31,32,33
+            int index = (r + 1) * 10 + (c + 1);
+            cell->setProperty("index", index); // пишем индекс в property
 
-            connect(cell, &QPushButton::clicked, //сигнал.
+            connect(cell, &QPushButton::clicked,
                     this, &MainWindow::onCellClicked);
 
-            cells.push_back(cell);
-            grid->addWidget(cell, r, c); //Кладём кнопку в сетку grid на позицию (r, c).
+            cells.push_back(cell);        // добавляем в массив
+            grid->addWidget(cell, r, c);  // и в сетку
         }
     }
 
@@ -76,12 +76,13 @@ void MainWindow::setupUI() // Это основное окно.
     int gridWidth = 3 * 100 + 2 * 8;
     gridContainer->setFixedWidth(gridWidth);
 
-    // Подпись снизу - ну это мусор уже наверно.
-    QLabel *label = new QLabel("Hello, Qt!", central);
+    // Подпись снизу
+    QLabel *label = new QLabel("Hello, Qt!", central); // пока пусть повисит левый тект
     QFont labelFont;
     labelFont.setPointSize(24);
     label->setFont(labelFont);
     label->setStyleSheet("color: blue;");
+
     label->setAlignment(Qt::AlignCenter);
 
     mainLayout->addStretch();
@@ -95,19 +96,19 @@ void MainWindow::setupUI() // Это основное окно.
     setCentralWidget(central);
 }
 
-// А здесь делаем диалоговое окно.
+// Диалог выбора крестик или нолик
 void MainWindow::createChoiceDialog()
 {
     if (choiceDialog)
-        return; // условие - Если уже создано то выходим.
+        return; // уже создано
 
-    choiceDialog = new QWidget(this, Qt::Dialog | Qt::FramelessWindowHint); // Делаем окно без крестика потом что по умолчанию QT делает крестик.
-    choiceDialog->setAttribute(Qt::WA_DeleteOnClose, false);// Тут спорно - специально окно не удаляеться а только хайдится - пока не знаю как лучше - может WA_DeleteOnClose = true оптимальнее. Вопрос.
-    choiceDialog->setWindowModality(Qt::ApplicationModal); // блокируем основное окно при диалоге.
+    choiceDialog = new QWidget(this, Qt::Dialog | Qt::FramelessWindowHint);
+    choiceDialog->setAttribute(Qt::WA_DeleteOnClose, false);
+    choiceDialog->setWindowModality(Qt::ApplicationModal); // блокируем главное окно
 
     choiceDialog->setStyleSheet(
         "QWidget {"
-        "    background-color: rgb(139, 69, 19);"   // коричневый а ниже черная рамка
+        "    background-color: rgb(139, 69, 19);"   // коричневый
         "    border: 2px solid black;"
         "}"
         );
@@ -116,6 +117,15 @@ void MainWindow::createChoiceDialog()
     dlgLayout->setContentsMargins(20, 20, 20, 20);
     dlgLayout->setSpacing(20);
 
+    // Первая строка: сюда будем писать индекс нажатой кнопки
+    choiceInfoLabel = new QLabel("Вы нажали на кнопку с индексом ??", choiceDialog); // текст перезапишем при клике
+    QFont infoFont;
+    infoFont.setPointSize(14);
+    choiceInfoLabel->setFont(infoFont);
+    choiceInfoLabel->setStyleSheet("color: yellow;");
+    choiceInfoLabel->setAlignment(Qt::AlignCenter);
+
+    // Вторая строка: подсказка что делать дальше
     QLabel *title = new QLabel("Выберите что прописать в кнопке", choiceDialog);
     QFont titleFont;
     titleFont.setPointSize(14);
@@ -123,7 +133,8 @@ void MainWindow::createChoiceDialog()
     title->setStyleSheet("color: yellow;");
     title->setAlignment(Qt::AlignCenter);
 
-    QHBoxLayout *buttonsLayout = new QHBoxLayout(); // бокс для кнопок
+    // Горизонтальный layout для двух кнопок X и O
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
     buttonsLayout->setSpacing(20);
 
     QFont choiceFont;
@@ -162,10 +173,12 @@ void MainWindow::createChoiceDialog()
     buttonsLayout->addWidget(btnX);
     buttonsLayout->addWidget(btnO);
 
+    // Порядок: сначала строка с индексом, потом подсказка, потом кнопки
+    dlgLayout->addWidget(choiceInfoLabel);
     dlgLayout->addWidget(title);
     dlgLayout->addLayout(buttonsLayout);
 
-    //Сигналы от кнопок X и O соединяем с соответствующими слотами:
+    // Подключаем слоты выбора
     connect(btnX, &QPushButton::clicked, this, &MainWindow::onChooseX);
     connect(btnO, &QPushButton::clicked, this, &MainWindow::onChooseO);
 
@@ -173,7 +186,7 @@ void MainWindow::createChoiceDialog()
     choiceDialog->setFixedSize(400, 200);
 }
 
-// Диалог перезапуска
+// Диалог когда игра завершена.
 void MainWindow::createRestartDialog()
 {
     if (restartDialog)
@@ -194,9 +207,9 @@ void MainWindow::createRestartDialog()
     dlgLayout->setContentsMargins(20, 20, 20, 20);
     dlgLayout->setSpacing(20);
 
-    QLabel *title = new QLabel("Вы заполнили все кнопки. \nХотите начать сначала?", restartDialog); //С новой строчи красивее
+    QLabel *title = new QLabel("Вы заполнили все кнопки.\nХотите начать сначала?", restartDialog);
     QFont titleFont;
-    titleFont.setPointSize(14);
+    titleFont.setPointSize(16);
     title->setFont(titleFont);
     title->setStyleSheet("color: yellow;");
     title->setAlignment(Qt::AlignCenter);
@@ -244,10 +257,10 @@ void MainWindow::createRestartDialog()
     dlgLayout->addLayout(buttonsLayout);
 
     connect(btnRestartYes, &QPushButton::clicked, this, &MainWindow::onRestartYes);
-    connect(btnRestartNo, &QPushButton::clicked, this, &MainWindow::onRestartNo);
+    connect(btnRestartNo,  &QPushButton::clicked, this, &MainWindow::onRestartNo);
 
     restartDialog->setLayout(dlgLayout);
-    restartDialog->setFixedSize(400, 200); //Окно фактически одинаковое надо на будущее придумать какой то конструктор с единым диалогом. Под усовия булевы верстка.
+    restartDialog->setFixedSize(420, 200); //Окно фактически одинаковое надо на будущее придумать какой то конструктор с единым диалогом. Под условия булевы верстка.
 }
 
 // Обработка клика по ячейке
@@ -264,7 +277,14 @@ void MainWindow::onCellClicked()
     currentCell = cell; //выбор для текущей кнопки
 
     if (!choiceDialog)
-        createChoiceDialog(); //запускаем диалог если ео нет.
+        createChoiceDialog(); //запускаем диалог если его нет.
+
+    // Обновляем строку с индексом нажатой кнопки в диалоге
+    if (choiceInfoLabel) {
+        int index = cell->property("index").toInt(); // читаем ранее записанный индекс
+        QString text = QString("Вы нажали на кнопку с индексом %1").arg(index);
+        choiceInfoLabel->setText(text);
+    }
 
     // центрируем диалог выбора относительно окна
     QPoint center = this->geometry().center();
@@ -369,7 +389,7 @@ void MainWindow::resetField()
         cell->setStyleSheet(
             "QPushButton {"
             "    background-color: yellow;"
-            "    color: blue;"          // базовый цвет для X
+            "    color: blue;" // базовый цвет для X
             "    border: 2px solid black;"
             "    border-radius: 0;"
             "}"

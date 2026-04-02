@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QVector> // Инклдим динамический массив.
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,23 +19,24 @@ public:
     ~MainWindow();
 
 private slots:
-    void onCellClicked();   // клик по любой из 9 ячеек/кнопок
-    void onChooseX();       // выбор X в диалоге
-    void onChooseO();       // выбор O в диалоге
+    void onCellClicked(); // клик по любой из 9 ячеек/кнопок
+    void onChooseX();     // выбор X в диалоге
+    void onChooseO();     // выбор O в диалоге
 
-    void onRestartYes();    // "Да" в диалоге перезапуска
-    void onRestartNo();     // "Нет" в диалоге перезапуска
+    void onRestartYes();  // "Да" в диалоге перезапуска
+    void onRestartNo();   // "Нет" в диалоге перезапуска
 
 private:
     Ui::MainWindow *ui;
 
-    QVector<QPushButton*> cells;        // Это ячейки поля - массив! (9 штук будет)
-     QPushButton *currentCell = nullptr; // текущая ячейка, для которой сейчас выбираем крестик или нолик. Это указатель на кнопку.
+    QVector<QPushButton*> cells;      // Это ячейки поля - массив! (9 штук будет)
+    QPushButton *currentCell = nullptr; // текущая ячейка, для которой сейчас выбираем крестик или нолик. Это указатель на кнопку.
 
     // Диалог выбора крестик или нолик
     QWidget *choiceDialog = nullptr; // Здесь объявляем само диалоговое окно выбора.
     QPushButton *btnX = nullptr;
     QPushButton *btnO = nullptr;
+    QLabel *choiceInfoLabel = nullptr; // сюда выводим текст "Вы нажали на кнопку с индексом .."
 
     // Диалог когда игра хавершена.
     QWidget *restartDialog = nullptr; // Здесь написал еще одно диалоговое - рациональнее как будто бы сделать его единым. Это на будущее.
